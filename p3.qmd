@@ -1,0 +1,103 @@
+---
+documentclass: article
+format: pdf
+editor: visual
+lang: es
+---
+
+```{=tex}
+\tableofcontents
+\newpage
+\section{YAHOO FINANCE}
+```
+
+# practica 3
+
+Importamos las librerías "yfinance" y "pandas"
+
+```{python}
+import yfinance as yf
+import pandas as pd
+```
+
+## 1- Uso de la libreria yfinance para extraer datos de acciones
+
+Utilizando el método Ticker() podemos extraer información bursátil pasandole como parámetro las siglas identificativas de con las que a la empresa es identificada en la bolsa. Como ejemplo vamos a recuperar las acciones de la empresa Apple y cuyas siglas identificativas son AAPL.
+
+```{python}
+apple = yf.Ticker("AAPL")
+```
+
+### Información de acciones
+
+Usando el atributo `info` podemos extraer información de las acciones de Apple en un diccionario de Python.
+
+```{python}
+apple_info=apple.info
+apple_info #mostramos lo que tiene la variable
+```
+
+```{python}
+apple_info['country']
+```
+
+## 2 - Uso yfinance para extraer datos históricos de precios de acciones
+
+Para realizar un análisis necesitamos extraer la evolución histórica de los indicadores principales (precio de apertura, máximo, mínimo, precio de cierre, etc.). Para ello usamos el método `history()`. Le podemos pasar como parámetro el periodo de tiempo cuyos datos queremos recoger. Las opciones para el período son 1 día (1d), 5d, 1 mes (1mo), 3mo, 6mo, 1 año (1y), 2y, 5y, 10y, ytd y max, este último (max) recoge el histórico completo desde la primera cotización en bolsa de la empresa.
+
+```{python}
+historico_apple = apple.history(period="max")
+print(historico_apple)
+```
+
+El formato en el que se devuelven los datos es un DataFrame de Pandas. Con la 'Fecha' como índice, la acción 'Open', 'High', 'Low', 'Close', 'Volume' y 'Stock Splits' que se dan para cada día. Haciendo uso de los métodos `head()` y `tail()` podremos ver las primeras líneas o las ultimas respectivamente. Como parámetro se les pasa el número de líneas a visualizar, si no se le proporciona este parámetro por defecto muestra cinco líneas.
+
+```{python}
+historico_apple.head()
+```
+
+Si queremos mostrar los diez primero registros de los datos de una sola columna; por ejemplo la columna de precio de la acción al cierre de la jornada
+
+```{python}
+print(historico_apple["Close"].head(10))
+```
+
+Podemos restablecer el índice del DataFrame con la función reset_index. También establecemos el parámetro inplace en True para que el cambio tenga lugar en el propio DataFrame.
+
+```{python}
+historico_apple.reset_index(inplace=True)
+```
+
+Graficamos el precio al cierre por fecha. Usamos el campo `Close` y el campo `Date`:
+
+```{python}
+historico_apple.plot(x="Date", y="Close")
+```
+
+**`historico_apple.plot(x="Date", y="Close")`** crea una gráfica utilizando la columna "Date" para el eje x y la columna "Close" para el eje y
+
+en la que se puede observar una linealidad en los datos desde el año 1980 hasta el año 2008, lo que indica que los precios se mantienen estables para luego de este año 2008 hasta el 2025 observar una tendencia ascendente, es decir, que los precios suben de manera significativa y se observan tambien en este ultimo periodo una irregulaidad de tendencia baja leve del año 2021 al año 2022, no tan significativa en compararciona los años anteriores al 2008.
+
+la tendencia ascendente de los años 2008 al 2023 indica un crecimiento en el valor de las acciones de Apple. lo que se puede reflejar gracias a los lanzaminetos constantes de nuevos iphone
+
+asi mismo, existen fluctuaciones en la grafica, con algunas caidas leves, tal es el caso del año 2021 al 2022. esto sugiere que el precio de las acciones experimento una volatibilidad moderada durante ese periodo. lo que pudo haber sido ocasionado por la pandemia de covid-19.
+
+## 3 - Uso de yfinance para extraer datos históricos de dividendos
+
+Los dividendos son la distribución de las ganancias de una empresa a los accionistas. En este caso, se definen como una cantidad de dinero devuelta por acción que posee un inversor. Usando la variable 'dividens' podemos obtener un DataFrame de los datos. El período de los datos viene dado por el período definido en la función "history".
+
+```{python}
+apple.dividends
+```
+
+```{python}
+apple.dividends.plot()
+```
+
+-   Los dividendos se muestran en función de la fecha en que fueron pagados.
+
+-   La serie de tiempo comienza desde el año 1987 hasta el año 2024, lo que indica que Apple ha estado pagando dividendos durante un largo período de tiempo.
+
+    -   Inicialmente, los dividendos parecen ser bastante pequeños (por ejemplo, 0.000536 en 1987), pero a medida que pasa el tiempo, aumentan significativamente (por ejemplo, 0.250000 en 2024).
+
+    -   
